@@ -40,6 +40,8 @@ resource "aws_s3_bucket" "main" {
   versioning {
     enabled = true
   }
+
+  force_destroy = true
 }
 
 resource "aws_iam_role" "role" {
