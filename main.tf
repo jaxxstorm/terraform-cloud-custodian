@@ -44,6 +44,16 @@ resource "aws_s3_bucket" "main" {
   force_destroy = true
 }
 
+module "cloudtrail_sqs_queue" {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-sqs.git?ref=master"
+  name   = "${var.namespace}-${var.stage}-${var.name}-sqs"
+
+  tags = {
+    Namespace = "${var.namespace}"
+    Stage     = "${var.stage}"
+  }
+}
+
 resource "aws_iam_role" "role" {
   name = "${var.name}-role"
   path = "/${var.namespace}/${var.stage}/"
@@ -72,4 +82,16 @@ resource "aws_iam_role_policy_attachment" "cloudtrail" {
 resource "aws_iam_role_policy_attachment" "cloudwatchlogs" {
   role       = "${aws_iam_role.role.name}"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "sqs" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+}
+
+# Needs this to do Looksup
+# FIXME: reduce scope
+resource "aws_iam_role_policy_attachment" "iam" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
 }
