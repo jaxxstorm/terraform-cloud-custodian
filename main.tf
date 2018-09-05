@@ -30,11 +30,13 @@ module "cloudtrail_s3_bucket" {
   region    = "${var.region}"
 }
 
-resource "aws_s3_bucket" "main" {
-  bucket = "${var.s3_bucket_name}"
+resource "aws_s3_bucket" "custodian_output" {
+  bucket = "${var.namespace}-${var.stage}-${var.region}-${var.name}-custodian-output"
 
   tags {
-    Name = "${var.s3_bucket_name}"
+    Name = "${var.name}-custodian-output"
+    Namespace = "${var.namespace}"
+    Stage = "${var.stage}"
   }
 
   versioning {
@@ -46,7 +48,7 @@ resource "aws_s3_bucket" "main" {
 
 module "cloudtrail_sqs_queue" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-sqs.git?ref=master"
-  name   = "${var.namespace}-${var.stage}-${var.name}-sqs"
+  name   = "${var.namespace}-${var.stage}-${var.region}-${var.name}-sqs"
 
   tags = {
     Namespace = "${var.namespace}"
@@ -73,6 +75,42 @@ resource "aws_iam_role" "role" {
 }
 EOF
 }
+
+resource "aws_iam_policy" "custodian_output_s3_policy" {
+  name = "${var.region}-${var.name}-s3-policy"
+  path = "/${var.namespace}/${var.stage}/"
+  description = "Allow Custodian to Write to S3 Bucket"
+ 	policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+		{
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": ["s3:ListBucket"],
+            "Resource": ["$${aws_s3_bucket.custodian_output.arn}"]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+            ],
+            "Resource": ["$${aws_s3_bucket.custodian_output.arn}/*"]
+        }	
+  ]
+}
+EOF 
+  
+}
+
 
 resource "aws_iam_role_policy_attachment" "cloudtrail" {
   role       = "${aws_iam_role.role.name}"
