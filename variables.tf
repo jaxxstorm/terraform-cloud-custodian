@@ -6,10 +6,6 @@ variable "stage" {
   description = "A development stage (Eg. dev, stg, prod)"
 }
 
-variable "s3_bucket_name" {
-  description = "Name of s3 bucket"
-}
-
 variable "name" {
   description = "Name of invocation"
 }

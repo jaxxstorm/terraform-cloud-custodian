@@ -34,9 +34,9 @@ resource "aws_s3_bucket" "custodian_output" {
   bucket = "${var.namespace}-${var.stage}-${var.region}-${var.name}-custodian-output"
 
   tags {
-    Name = "${var.name}-custodian-output"
+    Name      = "${var.name}-custodian-output"
     Namespace = "${var.namespace}"
-    Stage = "${var.stage}"
+    Stage     = "${var.stage}"
   }
 
   versioning {
@@ -77,10 +77,11 @@ EOF
 }
 
 resource "aws_iam_policy" "custodian_output_s3_policy" {
-  name = "${var.region}-${var.name}-s3-policy"
-  path = "/${var.namespace}/${var.stage}/"
+  name        = "${var.region}-${var.name}-s3-policy"
+  path        = "/${var.namespace}/${var.stage}/"
   description = "Allow Custodian to Write to S3 Bucket"
- 	policy = <<EOF
+
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -107,10 +108,8 @@ resource "aws_iam_policy" "custodian_output_s3_policy" {
         }	
   ]
 }
-EOF 
-  
+EOF
 }
-
 
 resource "aws_iam_role_policy_attachment" "cloudtrail" {
   role       = "${aws_iam_role.role.name}"
