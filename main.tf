@@ -111,6 +111,11 @@ resource "aws_iam_policy" "custodian_output_s3_policy" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "s3_output" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "${aws_iam_policy.custodian_output_s3_policy.arn}"
+}
+
 resource "aws_iam_role_policy_attachment" "cloudtrail" {
   role       = "${aws_iam_role.role.name}"
   policy_arn = "arn:aws:iam::aws:policy/AWSCloudTrailReadOnlyAccess"
