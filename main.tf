@@ -26,7 +26,7 @@ module "cloudtrail_s3_bucket" {
   source    = "git::https://github.com/cloudposse/terraform-aws-cloudtrail-s3-bucket.git?ref=master"
   namespace = "${var.namespace}"
   stage     = "${var.stage}"
-  name      = "${var.region}-${var.name}-cloudtrail-logs"
+  name      = "${var.name}-cloudtrail-logs"
   region    = "${var.region}"
 }
 
