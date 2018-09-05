@@ -96,7 +96,7 @@ resource "aws_iam_policy" "custodian_output_s3_policy" {
         {
             "Effect": "Allow",
             "Action": ["s3:ListBucket"],
-            "Resource": ["$${aws_s3_bucket.custodian_output.arn}"]
+            "Resource": ["${aws_s3_bucket.custodian_output.arn}"]
         },
         {
             "Effect": "Allow",
@@ -104,7 +104,7 @@ resource "aws_iam_policy" "custodian_output_s3_policy" {
                 "s3:PutObject",
                 "s3:GetObject"
             ],
-            "Resource": ["$${aws_s3_bucket.custodian_output.arn}/*"]
+            "Resource": ["${aws_s3_bucket.custodian_output.arn}/*"]
         }	
   ]
 }
